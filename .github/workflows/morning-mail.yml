@@ -1,0 +1,33 @@
+name: Sabah Briefing
+
+on:
+  schedule:
+    - cron: '30 3 * * *'  # 03:30 UTC = 06:30 TRT (UTC+3)
+  workflow_dispatch:
+
+jobs:
+  send-morning-mail:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Python kurulum
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Bağımlılıkları yükle
+        run: pip install -r requirements.txt
+
+      - name: Sabah mailini gönder
+        env:
+          MAIL_TO:             ${{ secrets.MAIL_TO }}
+          RESEND_API_KEY:      ${{ secrets.RESEND_API_KEY }}
+          OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
+          WEATHER_CITY:        ${{ secrets.WEATHER_CITY }}
+          ANTHROPIC_API_KEY:   ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python main.py
