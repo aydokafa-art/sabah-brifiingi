@@ -9,6 +9,7 @@ from modules.news import get_economy_news
 from modules.motivation import get_motivation
 from modules.mailer import send_mail
 from modules.template import build_email_html, get_today_date
+from modules.notion_tasks import get_notion_tasks
 
 
 def main():
@@ -23,7 +24,11 @@ def main():
     news = get_economy_news()
     print(f"  Haberler: {len(news)} adet")
 
-    html_body = build_email_html(motivation, news, weather)
+    tasks = get_notion_tasks()
+    toplam = sum(len(v) for v in tasks.values())
+    print(f"  Görevler: {toplam} adet (Notion)")
+
+    html_body = build_email_html(motivation, news, weather, tasks)
 
     recipient = os.getenv("MAIL_TO")
     if not recipient:

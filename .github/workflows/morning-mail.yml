@@ -9,6 +9,8 @@ jobs:
   send-morning-mail:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - name: Checkout
@@ -30,4 +32,5 @@ jobs:
           OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
           WEATHER_CITY:        ${{ secrets.WEATHER_CITY }}
           ANTHROPIC_API_KEY:   ${{ secrets.ANTHROPIC_API_KEY }}
+          NOTION_API_KEY:      ${{ secrets.NOTION_API_KEY }}
         run: python main.py

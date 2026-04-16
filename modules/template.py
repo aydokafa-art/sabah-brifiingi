@@ -19,7 +19,60 @@ def get_today_date() -> str:
     return f"{day}, {now.day} {_MONTHS[now.month]} {now.year}"
 
 
-def build_email_html(motivation: str, news: list, weather: dict) -> str:
+def _build_tasks_section(tasks: dict) -> str:
+    if not tasks:
+        return ""
+
+    tur_renk = {
+        "Günlük":  ("#eff6ff", "#1d4ed8", "📅"),
+        "Haftalık": ("#f0fdf4", "#15803d", "📆"),
+        "Aylık":   ("#faf5ff", "#7e22ce", "🗓️"),
+    }
+
+    rows = ""
+    for tur in ["Günlük", "Haftalık", "Aylık"]:
+        gorevler = tasks.get(tur)
+        if not gorevler:
+            continue
+        bg, color, icon = tur_renk.get(tur, ("#f8fafc", "#334155", "•"))
+        items = "".join(
+            f'<li style="margin-bottom:6px;color:#374151;">{g}</li>'
+            for g in gorevler
+        )
+        rows += f"""
+        <tr>
+          <td style="padding:0 0 14px;">
+            <div style="background:{bg};border-radius:8px;padding:14px 18px;">
+              <p style="margin:0 0 8px;color:{color};font-size:11px;
+                        font-weight:700;letter-spacing:1.5px;text-transform:uppercase;">
+                {icon} {tur}
+              </p>
+              <ul style="margin:0;padding-left:18px;font-size:14px;line-height:1.6;">
+                {items}
+              </ul>
+            </div>
+          </td>
+        </tr>"""
+
+    if not rows:
+        return ""
+
+    return f"""
+        <!-- ── Görevler ─────────────────────────────────────────────── -->
+        <tr>
+          <td style="padding:24px 32px 0;border-top:1px solid #f1f5f9;">
+            <p style="margin:0 0 16px;color:#94a3b8;font-size:10px;
+                      letter-spacing:2px;text-transform:uppercase;">
+              Yapılacaklar
+            </p>
+            <table width="100%" cellpadding="0" cellspacing="0">
+              {rows}
+            </table>
+          </td>
+        </tr>"""
+
+
+def build_email_html(motivation: str, news: list, weather: dict, tasks: dict | None = None) -> str:
     date_str = get_today_date()
 
     # Haber satırları
@@ -51,6 +104,8 @@ def build_email_html(motivation: str, news: list, weather: dict) -> str:
         f" &nbsp;·&nbsp; Nem %{weather['humidity']}"
         f" &nbsp;·&nbsp; Rüzgar {weather['wind_speed']} km/s"
     )
+
+    tasks_html = _build_tasks_section(tasks or {})
 
     return f"""<!DOCTYPE html>
 <html lang="tr">
@@ -122,6 +177,8 @@ def build_email_html(motivation: str, news: list, weather: dict) -> str:
             </ul>
           </td>
         </tr>
+
+        {tasks_html}
 
         <!-- ── Footer ────────────────────────────────────────────────── -->
         <tr>
