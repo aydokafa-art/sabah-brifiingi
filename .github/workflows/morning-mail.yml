@@ -33,4 +33,6 @@ jobs:
           WEATHER_CITY:        ${{ secrets.WEATHER_CITY }}
           ANTHROPIC_API_KEY:   ${{ secrets.ANTHROPIC_API_KEY }}
           NOTION_API_KEY:      ${{ secrets.NOTION_API_KEY }}
-        run: python main.py
+        run: |
+          echo "NOTION_API_KEY uzunlugu: ${#NOTION_API_KEY}"
+          python main.py
