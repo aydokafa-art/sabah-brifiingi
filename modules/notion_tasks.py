@@ -46,11 +46,12 @@ def get_notion_tasks() -> dict:
     try:
         with urllib.request.urlopen(req, timeout=10) as r:
             data = json.loads(r.read())
+        print(f"  Notion yanıtı: {len(data.get('results', []))} kayıt bulundu")
     except urllib.error.HTTPError as e:
-        print(f"Notion API hatası {e.code}: {e.read().decode()}")
+        print(f"  Notion API hatası {e.code}: {e.read().decode()}")
         return {}
     except Exception as e:
-        print(f"Notion bağlantı hatası: {e}")
+        print(f"  Notion bağlantı hatası: {e}")
         return {}
 
     tasks: dict[str, list[str]] = {}
